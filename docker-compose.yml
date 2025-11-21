@@ -1,0 +1,44 @@
+services:
+  crypto-shields-backend:
+    container_name: crypto-shields-backend
+    image: node:22-alpine
+    ports: ["6001:5000"]
+    working_dir: /app/backend
+    volumes:
+      - ./backend:/app/backend
+    command: sh -c "npm install && npm start"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=ecommerce_db
+    depends_on:
+      - crypto-shields-database
+
+  crypto-shields-frontend:
+    container_name: crypto-shields-frontend
+    image: node:22-alpine
+    ports:
+      - "6002:3000"
+    working_dir: /app/frontend
+    volumes:
+      - ./frontend:/app/frontend
+    command: sh -c "npm install && npm start"
+    depends_on:
+      - crypto-shields-backend
+
+  crypto-shields-database:
+    container_name: crypto-shields-database
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=ecommerce_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
